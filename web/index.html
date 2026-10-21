@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>田亩星链</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+         background:#f5f6f8; max-width:480px; margin:0 auto; min-height:100vh; padding-bottom:70px; }
+  /* 顶部 */
+  .header { background:linear-gradient(135deg,#2e7d32,#43a047); color:#fff; padding:16px 16px 14px; }
+  .header h1 { font-size:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .header .date { font-size:12px; opacity:.85; margin-top:3px; }
+  /* 背景提示条（context，如雨季背景） */
+  .context-bar { background:#e8f5e9; border-left:4px solid #2e7d32; margin:10px 12px; padding:10px 12px;
+                 border-radius:8px; font-size:13px; color:#1b5e20; display:none; }
+  .context-bar.show { display:block; }
+  /* 预警横幅 */
+  .warn-banner { background:#fff3e0; border-left:4px solid #f57c00; margin:10px 12px; padding:10px 12px;
+                 border-radius:8px; font-size:13px; color:#e65100; display:none; }
+  .warn-banner.show { display:block; }
+  /* 卡片 */
+  .card { background:#fff; margin:10px 12px; border-radius:12px; overflow:hidden;
+          box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  .card-title { font-size:14px; font-weight:600; padding:12px 14px 8px; color:#333; }
+  /* 行情行 */
+  .row { display:flex; align-items:center; padding:9px 14px; border-top:1px solid #f0f0f0; }
+  .row .name { flex:1; font-size:15px; }
+  .row .sub { font-size:11px; color:#999; margin-top:2px; }
+  .row .price { font-size:16px; font-weight:600; width:90px; text-align:right; }
+  .row .pct { width:70px; text-align:right; font-size:14px; font-weight:600; }
+  .up { color:#e53935; } .down { color:#1e88e5; } .flat { color:#999; }
+  /* 关注星标 */
+  .star { font-size:20px; width:32px; text-align:center; cursor:pointer; color:#ccc; }
+  .star.on { color:#fbc02d; }
+  /* 底部 tab */
+  .tabbar { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px;
+            background:#fff; display:flex; border-top:1px solid #e0e0e0; padding-bottom:env(safe-area-inset-bottom); }
+  .tab { flex:1; text-align:center; padding:8px 0 6px; font-size:11px; color:#999; cursor:pointer; }
+  .tab .ic { font-size:22px; display:block; margin-bottom:2px; }
+  .tab.active { color:#2e7d32; }
+  /* 消息列表 */
+  .msg { padding:12px 14px; border-top:1px solid #f0f0f0; display:flex; gap:10px; }
+  .msg .tag { font-size:11px; padding:2px 8px; border-radius:10px; height:fit-content; white-space:nowrap; }
+  .tag.price { background:#ffe0e0; color:#c62828; }
+  .tag.weather { background:#e0f2e0; color:#2e7d32; }
+  .msg .body { flex:1; }
+  .msg .t { font-size:14px; font-weight:600; color:#333; }
+  .msg .d { font-size:12px; color:#888; margin-top:3px; }
+  .msg .time { font-size:11px; color:#bbb; margin-top:4px; }
+  .empty { text-align:center; color:#aaa; font-size:14px; padding:40px 0; }
+  /* 天气卡 */
+  .weather-grid { display:flex; padding:0 14px 12px; gap:8px; overflow-x:auto; }
+  .weather-item { background:#f0f7f0; border-radius:10px; padding:10px; min-width:90px; text-align:center; }
+  .weather-item .loc { font-size:12px; color:#555; }
+  .weather-item .tmp { font-size:20px; font-weight:700; color:#2e7d32; margin:4px 0 2px; }
+  .weather-item .cond { font-size:11px; color:#888; }
+  .btn-follow { background:#2e7d32; color:#fff; border:none; border-radius:6px; padding:3px 10px;
+                font-size:12px; cursor:pointer; }
+  .btn-follow.on { background:#eee; color:#666; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🌾 田亩星链</h1>
+  <div class="date" id="today"></div>
+</div>
+
+<div class="context-bar" id="contextBar"></div>
+
+<div class="warn-banner" id="warnBanner"></div>
+
+<!-- ============ 页签1: 今日行情 ============ -->
+<div id="tab-quotes">
+  <div class="card">
+    <div class="card-title">🥬 蔬菜价格 <span style="font-weight:400;font-size:11px;color:#888">（批发价·元/公斤）</span> <span id="vegDate" style="font-weight:400;font-size:12px;color:#999"></span></div>
+    <div id="vegList"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🌹 花卉价格 <span id="flDate" style="font-weight:400;font-size:12px;color:#999"></span></div>
+    <div id="flList"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🌦️ 各地天气</div>
+    <div class="weather-grid" id="weatherGrid"></div>
+  </div>
+</div>
+
+<!-- ============ 页签2: 我的关注 ============ -->
+<div id="tab-watch" style="display:none">
+  <div class="card">
+    <div class="card-title">⭐ 我的关注</div>
+    <div id="watchList"></div>
+  </div>
+</div>
+
+<!-- ============ 页签3: 消息中心 ============ -->
+<div id="tab-msgs" style="display:none">
+  <div class="card">
+    <div class="card-title">📢 消息中心</div>
+    <div id="msgList"></div>
+  </div>
+</div>
+
+<div class="tabbar">
+  <div class="tab active" data-tab="quotes"><span class="ic">📊</span>行情</div>
+  <div class="tab" data-tab="watch"><span class="ic">⭐</span>关注</div>
+  <div class="tab" data-tab="msgs"><span class="ic">🔔</span>消息</div>
+</div>
+
+<script>
+const API = '';  // 同源
+let watchIds = new Set();
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function fmtDate(s){
+  if(!s) return '';
+  if(s.length===8 && !s.includes('-')){ return s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6); }
+  return s;
+}
+function pctClass(p){
+  if(p==null||p===0) return 'flat';
+  return p>0?'up':'down';
+}
+function pctText(p){
+  if(p==null) return '—';
+  if(p===0) return '±0.0%';
+  return (p>0?'+':'')+p.toFixed(1)+'%';
+}
+
+/* ---------- 行情 ---------- */
+async function loadQuotes(){
+  try{
+    const [veg,fl,w] = await Promise.all([
+      fetch(API+'/api/quotes/veg').then(r=>r.json()),
+      fetch(API+'/api/quotes/flower').then(r=>r.json()),
+      fetch(API+'/api/weather?loc=昆明').then(r=>r.json())
+    ]);
+    document.getElementById('vegDate').textContent = fmtDate(veg.date);
+    document.getElementById('flDate').textContent = fmtDate(fl.date);
+    // 蔬菜
+    const vl = document.getElementById('vegList');
+    vl.innerHTML = veg.items.map(i=>`
+      <div class="row">
+        <div style="flex:1">
+          <div class="name">${esc(i.variety)}</div>
+          <div class="sub">${esc(i.market.replace('昆明市','').replace('蔬菜批发市场有限公司','').replace('云南','').replace('蔬菜批发市场',''))}</div>
+        </div>
+        <span class="star ${watchIds.has('veg:'+i.variety+':'+i.market)?'on':''}" onclick="toggleWatch('veg','${esc(i.variety)}','${esc(i.market)}',this)">★</span>
+        <div class="price">¥${i.price.toFixed(2)}</div>
+        <div class="pct ${pctClass(i.change_pct)}">${pctText(i.change_pct)}</div>
+      </div>`).join('');
+    // 花卉
+    document.getElementById('flList').innerHTML = fl.items.map(i=>`
+      <div class="row">
+        <div style="flex:1">
+          <div class="name">${esc(i.breed)}</div>
+          <div class="sub">KIFA 均价</div>
+        </div>
+        <span class="star ${watchIds.has('flower:'+i.breed)?'on':''}" onclick="toggleWatch('flower','${esc(i.breed)}',null,this)">★</span>
+        <div class="price">¥${i.avg_price.toFixed(2)}</div>
+        <div class="pct ${pctClass(i.change_pct)}">${pctText(i.change_pct)}</div>
+      </div>`).join('');
+    // 天气
+    const wg = document.getElementById('weatherGrid');
+    const all = await fetch(API+'/api/weather-all').then(r=>r.json()).catch(()=>[]);
+    wg.innerHTML = (all.length?all:[w].filter(Boolean)).map(x=>`
+      <div class="weather-item">
+        <div class="loc">${esc(x.location)}</div>
+        <div class="tmp">${x.temp_max!=null?Math.round(x.temp_max)+'°':'—'}</div>
+        <div class="cond">${esc(x.condition_text||'')}</div>
+      </div>`).join('') || '<div class="empty">暂无天气数据</div>';
+  }catch(e){
+    document.getElementById('vegList').innerHTML='<div class="empty">加载失败：'+esc(e.message)+'</div>';
+  }
+}
+
+/* ---------- 关注 ---------- */
+async function toggleWatch(type,key,market,el){
+  if(watchIds.has(type+':'+key+(market?':'+market:''))){
+    // 已关注 → 取消
+    const list = await fetch(API+'/api/watchlist').then(r=>r.json());
+    const item = list.items.find(x=>x.item_type===type && x.item_key===key);
+    if(item) await fetch(API+'/api/watchlist/'+item.id,{method:'DELETE'});
+    el.classList.remove('on');
+  }else{
+    await fetch(API+'/api/watchlist',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({item_type:type,item_key:key,market:market||null})});
+    el.classList.add('on');
+  }
+  loadWatch();
+}
+async function loadWatch(){
+  try{
+    const list = await fetch(API+'/api/watchlist').then(r=>r.json());
+    watchIds = new Set(list.items.map(x=>x.item_type+':'+x.item_key+(x.market?':'+x.market:'')));
+    const wl = document.getElementById('watchList');
+    if(!list.items.length){ wl.innerHTML='<div class="empty">还没有关注，去行情页点 ★ 添加</div>'; return; }
+    // 对每个关注项找最新价
+    const [veg,fl] = await Promise.all([
+      fetch(API+'/api/quotes/veg').then(r=>r.json()),
+      fetch(API+'/api/quotes/flower').then(r=>r.json())
+    ]);
+    wl.innerHTML = list.items.map(x=>{
+      let price=null,pct=null,sub='';
+      if(x.item_type==='veg'){
+        const v = veg.items.find(i=>i.variety===x.item_key && i.market===x.market);
+        if(v){ price=v.price; pct=v.change_pct; }
+        sub = x.market||'';
+      }else{
+        const f = fl.items.find(i=>i.breed===x.item_key);
+        if(f){ price=f.avg_price; pct=f.change_pct; }
+        sub='KIFA 均价';
+      }
+      return `<div class="row">
+        <div style="flex:1">
+          <div class="name">${esc(x.item_key)}</div>
+          <div class="sub">${esc(sub)}</div>
+        </div>
+        <div class="price">${price!=null?'¥'+price.toFixed(2):'—'}</div>
+        <div class="pct ${pctClass(pct)}">${pctText(pct)}</div>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+
+/* ---------- 消息 ---------- */
+async function loadMsgs(){
+  try{
+    const list = await fetch(API+'/api/alerts').then(r=>r.json());
+    const ml = document.getElementById('msgList');
+    if(!list.items.length){ ml.innerHTML='<div class="empty">暂无消息，价格波动或天气变化时会通知你</div>'; return; }
+    ml.innerHTML = list.items.map(m=>`
+      <div class="msg">
+        <span class="tag ${m.type==='weather'?'weather':'price'}">${m.type==='weather'?'天气':'价格'}</span>
+        <div class="body">
+          <div class="t">${esc(m.title)}</div>
+          <div class="d">${esc(m.detail)}</div>
+          <div class="time">${fmtDate(m.ts)}</div>
+        </div>
+      </div>`).join('');
+  }catch(e){}
+}
+
+/* ---------- 背景提示条 ---------- */
+async function loadContext(){
+  try{
+    const veg = await fetch(API+'/api/quotes/veg').then(r=>r.json());
+    const bar = document.getElementById('contextBar');
+    if(veg.context && veg.context.title){
+      bar.textContent = (veg.context.detail || veg.context.title);
+      bar.classList.add('show');
+    } else {
+      bar.textContent = '';
+      bar.classList.remove('show');
+    }
+  }catch(e){}
+}
+
+/* ---------- 预警横幅 ---------- */
+async function loadBanner(){
+  try{
+    const list = await fetch(API+'/api/alerts').then(r=>r.json());
+    const w = list.items.find(m=>m.type==='weather');
+    const b = document.getElementById('warnBanner');
+    if(w){ b.textContent = '⚠️ '+w.title; b.classList.add('show'); }
+  }catch(e){}
+}
+
+/* ---------- tab 切换 ---------- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('[id^="tab-"]').forEach(x=>x.style.display='none');
+    document.getElementById('tab-'+t.dataset.tab).style.display='block';
+    if(t.dataset.tab==='watch') loadWatch();
+    if(t.dataset.tab==='msgs') loadMsgs();
+  });
+});
+
+document.getElementById('today').textContent = new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+loadQuotes(); loadBanner(); loadContext();
+</script>
+</body>
+</html>

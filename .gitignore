@@ -1,0 +1,9 @@
+# runtime data, never commit
+data/*.db
+data/*.db-*
+*.sqlite
+*.sqlite3
+__pycache__/
+*.pyc
+.env
+.tms_*
