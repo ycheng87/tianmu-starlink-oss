@@ -1,0 +1,60 @@
+
+/* ===== v2.0 C 稿通用 ===== */
+page { background: #F4F7F3; }
+.page { padding: 8rpx 32rpx 48rpx; color: #14211A; font-variant-numeric: tabular-nums; }
+.up { color: #D9363E; } .down { color: #1E9B5A; } .flat { color: #8A978F; }
+.up-green { color: #1E9B5A; } .down-green { color: #D9363E; }
+.pill { font-size: 24rpx; font-weight: 700; padding: 6rpx 12rpx; border-radius: 14rpx; min-width: 112rpx; text-align: center; box-sizing: border-box; }
+.pill.up, .pill.down-green { background: #FDECEC; } .pill.down, .pill.up-green { background: #E6F5EC; } .pill.flat { background: #F0F3F0; }
+.card { background: #FFFFFF; border: 1rpx solid #E6ECE7; border-radius: 40rpx; padding: 24rpx 32rpx 8rpx; margin: 24rpx 0 0; box-shadow: none; overflow: visible; }
+.empty { padding: 40rpx 0; text-align: center; color: #9AA69F; font-size: 26rpx; }
+.notice { display: flex; align-items: center; gap: 12rpx; margin-top: 20rpx; padding: 18rpx 24rpx; border-radius: 24rpx; font-size: 24rpx; }
+.notice.calm { background: #EAF0EB; color: #5E6E64; }
+.notice.calm .dot { color: #B7C2BB; }
+.notice.warn { background: #FFF1E6; color: #8F4E10; }
+.notice.fest { background: #FFF7E0; color: #7A5A00; }
+.notice-k { font-weight: 700; flex-shrink: 0; }
+.notice-v { flex: 1; min-width: 0; }
+.notice-a { flex-shrink: 0; opacity: .7; }
+.foot { margin-top: 32rpx; text-align: center; font-size: 21rpx; color: #8A978F; line-height: 1.6; }
+.skeleton { margin-top: 24rpx; }
+.sk-card { height: 140rpx; border-radius: 40rpx; background: linear-gradient(90deg, #E9EDEA 25%, #F2F5F2 50%, #E9EDEA 75%); background-size: 200% 100%; animation: sk 1.2s infinite; margin-bottom: 24rpx; }
+.sk-card.tall { height: 360rpx; }
+@keyframes sk { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+.error-box { margin-top: 48rpx; text-align: center; }
+.err-text { color: #5E6E64; font-size: 28rpx; margin-bottom: 24rpx; }
+.btn-retry { display: inline-block; padding: 16rpx 48rpx; border-radius: 40rpx; background: #14532D; color: #fff; font-size: 28rpx; }
+
+.top { padding: 16rpx 8rpx 0; }
+.top-row { display: flex; justify-content: space-between; align-items: center; }
+.meta { font-size: 24rpx; color: #5E6E64; }
+.lag { margin-left: 12rpx; color: #A85E14; }
+.watch { font-size: 25rpx; color: #14532D; border: 2rpx solid #14532D; border-radius: 32rpx; padding: 6rpx 22rpx; }
+.watch.on { background: #14532D; color: #fff; }
+.title { font-size: 48rpx; font-weight: 800; margin-top: 8rpx; }
+.pr { display: flex; align-items: baseline; gap: 20rpx; margin-top: 12rpx; }
+.pr-v { font-size: 92rpx; font-weight: 800; line-height: 1; }
+.pr-u { font-size: 28rpx; color: #5E6E64; }
+.pr-none { font-size: 32rpx; color: #9AA69F; }
+.card { padding: 28rpx 32rpx; }
+.lbl { display: flex; justify-content: space-between; font-size: 24rpx; color: #8A978F; }
+.lbl.mt { margin-top: 32rpx; }
+.lbl.center { align-items: center; }
+.lbl .h { font-size: 30rpx; color: #14211A; font-weight: 700; }
+.rg { position: relative; height: 16rpx; background: linear-gradient(90deg, #CDEBD9, #F9D3D5); border-radius: 8rpx; margin: 28rpx 0 12rpx; }
+.rg-dot { position: absolute; top: -10rpx; width: 36rpx; height: 36rpx; margin-left: -18rpx; border-radius: 50%; background: #14532D; border: 6rpx solid #fff; box-shadow: 0 2rpx 8rpx rgba(0,0,0,.2); box-sizing: border-box; }
+.rgl { display: flex; justify-content: space-between; font-size: 24rpx; color: #5E6E64; }
+.rgl .b { font-size: 30rpx; font-weight: 700; color: #14211A; }
+.cps { display: flex; gap: 14rpx; margin-top: 20rpx; }
+.cp { flex: 1; background: #F4F7F3; border-radius: 28rpx; padding: 18rpx 16rpx; display: flex; flex-direction: column; min-width: 0; }
+.cp-l { font-size: 21rpx; color: #5E6E64; white-space: nowrap; }
+.cp-v { font-size: 38rpx; font-weight: 800; margin: 4rpx 0; }
+.cp-s { font-size: 20rpx; color: #9AA69F; }
+.cp.now { background: #14532D; color: #fff; }
+.cp.now .cp-l, .cp.now .cp-s { color: #CFE3D6; }
+.cp.empty .cp-v { color: #B7C2BB; }
+.rt { display: flex; gap: 10rpx; }
+.rt-i { font-size: 23rpx; padding: 6rpx 18rpx; border-radius: 18rpx; color: #5E6E64; background: #F0F3F0; }
+.rt-i.on { background: #14532D; color: #fff; font-weight: 700; }
+.chart { margin-top: 16rpx; display: block; }
+.note { font-size: 21rpx; color: #9AA69F; margin-top: 10rpx; }

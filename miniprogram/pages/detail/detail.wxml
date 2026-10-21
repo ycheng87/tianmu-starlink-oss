@@ -1,0 +1,58 @@
+<!-- 田亩星链 v2.0 品种详情（C 稿实现） -->
+<view class="page">
+  <view class="skeleton" wx:if="{{loading}}"><view class="sk-card"></view><view class="sk-card tall"></view></view>
+  <view class="error-box" wx:if="{{error}}">
+    <view class="err-text">{{error}}</view>
+    <view class="btn-retry" bindtap="loadAll">重新加载</view>
+  </view>
+
+  <block wx:if="{{!loading && !error}}">
+    <view class="top">
+      <view class="top-row">
+        <view class="meta">{{type === 'flower' ? '鲜花' : '蔬菜'}} · {{marketLabel}}<text wx:if="{{quote}}"> · {{quote.dateShort}} 均价</text><text class="lag" wx:if="{{quote && quote.lagText}}">{{quote.lagText}}</text></view>
+        <view class="watch {{watched ? 'on' : ''}}" bindtap="onToggleWatch">{{watched ? '★ 已关注' : '☆ 关注'}}</view>
+      </view>
+      <view class="title">{{name}}</view>
+      <view class="pr" wx:if="{{quote && !quote.noQuote}}">
+        <text class="pr-v">{{quote.priceText}}</text><text class="pr-u">{{unit}}</text>
+        <text class="pill {{quote.pctClass}}" wx:if="{{quote.hasPct}}">{{quote.pctText}}</text>
+      </view>
+      <view class="pr" wx:elif="{{quote}}"><text class="pr-none">今日暂无报价</text></view>
+    </view>
+
+    <view class="card">
+      <block wx:if="{{range}}">
+        <view class="lbl"><text>当日价格区间</text><text>{{quote.dateShort}}</text></view>
+        <view class="rg"><view class="rg-dot" style="left: {{range.dot}}%;"></view></view>
+        <view class="rgl"><text>最低 <text class="b">{{range.lowText}}</text></text><text>均价 <text class="b">{{range.avgText}}</text></text><text>最高 <text class="b">{{range.highText}}</text></text></view>
+      </block>
+      <view class="lbl {{range ? 'mt' : ''}}"><text>跨期比 · 同一品种当时均价</text><text>{{unit}}</text></view>
+      <view class="cps" wx:if="{{cmp.length}}">
+        <view class="cp {{item.now ? 'now' : ''}} {{item.empty ? 'empty' : ''}}" wx:for="{{cmp}}" wx:key="label">
+          <text class="cp-l">{{item.label}}</text>
+          <text class="cp-v">{{item.valueText}}</text>
+          <text class="cp-s">{{item.sub}}</text>
+        </view>
+      </view>
+      <view class="empty" wx:else>暂无历史报价</view>
+    </view>
+
+    <view class="card">
+      <view class="lbl center"><text class="h">价格走势</text>
+        <view class="rt"><text class="rt-i {{historyDays === item.days ? 'on' : ''}}" wx:for="{{rangeOptions}}" wx:key="days" data-days="{{item.days}}" bindtap="onChangeRange">{{item.label}}</text></view>
+      </view>
+      <canvas canvas-id="detailChart" id="detailChart" class="chart" wx:if="{{chartPoints >= 2}}" style="width: {{chartWidth}}px; height: {{chartHeight}}px;"></canvas>
+      <view class="empty" wx:else>这个区间有报价的日子不足 2 天，画不出走势</view>
+      <view class="note">{{chartNote}}</view>
+    </view>
+
+    <view class="notice fest" wx:if="{{festival}}" bindtap="onShowFestival">
+      <text class="notice-k">节日规律</text><text class="notice-v">{{festival.festival}} · 还有 {{festival.days_left}} 天</text><text class="notice-a">›</text>
+    </view>
+
+    <view class="foot">
+      <view>来源：{{source || '省农业农村厅'}}</view>
+      <view>批发/市场参考价，非地头收购价 · 仅供参考，不构成买卖建议</view>
+    </view>
+  </block>
+</view>

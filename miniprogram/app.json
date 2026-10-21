@@ -1,0 +1,59 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/watch/watch",
+    "pages/msgs/msgs",
+    "pages/mine/mine",
+    "pages/detail/detail"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#F4F7F3",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "田亩星链",
+    "backgroundColor": "#F4F7F3",
+    "backgroundTextStyle": "dark"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于获取本地天气信息"
+    }
+  },
+  "tabBar": {
+    "color": "#8A978F",
+    "selectedColor": "#14532D",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "行情",
+        "iconPath": "images/tab-market.png",
+        "selectedIconPath": "images/tab-market-active.png"
+      },
+      {
+        "pagePath": "pages/watch/watch",
+        "text": "关注",
+        "iconPath": "images/tab-watch.png",
+        "selectedIconPath": "images/tab-watch-active.png"
+      },
+      {
+        "pagePath": "pages/msgs/msgs",
+        "text": "消息",
+        "iconPath": "images/tab-msgs.png",
+        "selectedIconPath": "images/tab-msgs-active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "images/tab-mine.png",
+        "selectedIconPath": "images/tab-mine-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "__usePrivacyCheck__": true,
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "sitemapLocation": "sitemap.json"
+}

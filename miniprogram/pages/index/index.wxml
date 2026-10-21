@@ -1,0 +1,126 @@
+<!-- 田亩星链 v2.0 首页（C 稿实现） -->
+<template name="qrow">
+  <view class="row {{stale ? 'stale' : ''}}" data-name="{{name}}" data-type="{{type}}" data-market="{{market}}" bindtap="onGoDetail">
+    <view class="nm">
+      <view class="nm-t">{{name}}<text class="tag" wx:if="{{showTag}}">{{type === 'flower' ? '鲜花' : '蔬菜'}}</text></view>
+      <view class="nm-s" wx:if="{{hasRange}}">{{lowText}} – {{highText}}</view>
+      <view class="nm-s" wx:elif="{{market}}">{{market}}</view>
+    </view>
+    <view class="rb" wx:if="{{hasRange}}"><view class="rb-fill"></view><view class="rb-dot" style="left: {{dotLeft}}%;"></view></view>
+    <view class="rb-space" wx:else></view>
+    <view class="px" wx:if="{{noQuote}}"><text class="px-none">暂无报价</text></view>
+    <view class="px" wx:else>{{priceText}}<text class="px-u">{{unitShort}}</text></view>
+    <view class="pill {{pctClass}}" wx:if="{{!noQuote}}">{{pctText}}</view>
+    <view class="pill-space" wx:else></view>
+    <view class="star {{watched ? 'on' : ''}}" data-key="{{key}}" catchtap="onToggleWatch">{{watched ? '★' : '☆'}}</view>
+  </view>
+</template>
+
+<view class="page">
+  <view class="refresh-bar" wx:if="{{refreshing}}">正在刷新行情…</view>
+
+  <view class="hd">
+    <view class="hd-sub">斗南 · 王旗营 批发参考价</view>
+    <view class="loc" bindtap="onRefreshWeather">◎ {{weather.location || '昆明-晋宁'}}<text wx:if="{{weatherLocationDenied}}"> · 点此定位</text></view>
+  </view>
+
+  <view class="search">
+    <text class="search-ico">⌕</text>
+    <input class="search-input" value="{{keyword}}" placeholder="搜品种：鲜花 {{flowerCount}} 种 · 蔬菜 {{vegCount}} 种" placeholder-class="search-ph" confirm-type="search" bindinput="onSearchInput" bindconfirm="onSearchConfirm" bindfocus="onSearchFocus" bindblur="onSearchBlur" />
+    <text class="search-clear" wx:if="{{keyword}}" bindtap="onSearchClear">✕</text>
+  </view>
+  <view class="search-history" wx:if="{{showHistory && !keyword && searchHistory.length}}">
+    <text class="sh-label">最近搜过</text>
+    <text class="sh-item" wx:for="{{searchHistory}}" wx:key="*this" data-value="{{item}}" bindtap="onTapHistory">{{item}}</text>
+  </view>
+
+  <view class="skeleton" wx:if="{{loading}}">
+    <view class="sk-card"></view><view class="sk-card tall"></view><view class="sk-card"></view>
+  </view>
+  <view class="error-box" wx:if="{{error}}">
+    <view class="err-text">{{error}}</view>
+    <view class="btn-retry" bindtap="onRetry">重新加载</view>
+  </view>
+
+  <block wx:if="{{!loading && !error}}">
+    <!-- 搜索结果（跨鲜花 + 蔬菜） -->
+    <view class="card" wx:if="{{keyword}}">
+      <view class="ch"><text class="ch-t">搜索「{{keyword}}」</text><text class="ch-s">{{searchRows.length}} 个结果 · 鲜花 {{flowerDate}} / 蔬菜 {{vegDate}}</text></view>
+      <block wx:for="{{searchRows}}" wx:key="key"><template is="qrow" data="{{...item}}" /></block>
+      <view class="empty" wx:if="{{!searchRows.length}}">没有找到这个品种</view>
+    </view>
+
+    <block wx:else>
+      <!-- 天气三格 -->
+      <view class="wx" wx:if="{{weatherCells.length}}" bindtap="onRefreshWeather">
+        <view class="wd {{index === 0 ? 'now' : ''}}" wx:for="{{weatherCells}}" wx:key="key">
+          <text class="wd-l">{{item.label}}</text>
+          <text class="wd-t">{{item.text}}</text>
+          <text class="wd-c">{{item.temp}}</text>
+        </view>
+      </view>
+      <view class="wsrc" wx:if="{{weatherCells.length}}">和风天气</view>
+
+      <!-- 预警 / 节日（常态为空，明确写暂无） -->
+      <view class="notice warn" wx:if="{{weatherAlerts.length}}">
+        <text class="notice-k">天气预警</text><text class="notice-v">{{weatherAlerts[0].title}}</text>
+      </view>
+      <view class="notice fest" wx:if="{{festival}}" bindtap="onOpenFestival">
+        <text class="notice-k">节日提醒</text><text class="notice-v">{{festival.festival}} · 还有 {{festival.days_left}} 天</text><text class="notice-a">历史规律 ›</text>
+      </view>
+      <view class="notice calm" wx:if="{{!weatherAlerts.length && !festival}}">
+        <text>天气预警：暂无</text><text class="dot">·</text><text>30 天内节日：暂无</text>
+      </view>
+
+      <!-- 品类切换（日期分开标） -->
+      <view class="seg">
+        <view class="seg-i {{activeCategory === 'flower' ? 'on' : ''}}" data-category="flower" bindtap="onSelectCategory">
+          <text class="seg-t">鲜花 · {{flowerCount}}</text><text class="seg-s">斗南 {{flowerDate}}</text>
+        </view>
+        <view class="seg-i {{activeCategory === 'veg' ? 'on' : ''}}" data-category="veg" bindtap="onSelectCategory">
+          <text class="seg-t">蔬菜 · {{vegCount}}</text><text class="seg-s">王旗营 {{vegDate}}</text>
+        </view>
+      </view>
+
+      <!-- 今日头条卡 -->
+      <view class="hero" wx:if="{{hero}}" data-name="{{hero.name}}" data-type="{{hero.type}}" data-market="{{hero.market}}" bindtap="onGoDetail">
+        <view class="hero-k">{{heroKicker}}</view>
+        <view class="hero-t">
+          <view class="hero-l">
+            <view class="hero-n">{{hero.name}}</view>
+            <view class="hero-chg {{hero.pctClass}}">{{hero.pctText}}</view>
+          </view>
+          <view class="hero-p">{{hero.priceText}}<text class="hero-u">{{hero.unit}}</text></view>
+        </view>
+        <view class="dist" wx:if="{{dist.total}}">
+          <view class="dist-up" style="flex: {{dist.up}};"></view>
+          <view class="dist-flat" style="flex: {{dist.flat}};"></view>
+          <view class="dist-dn" style="flex: {{dist.down}};"></view>
+        </view>
+        <view class="dist-l"><text>上涨 {{dist.up}} 种</text><text>{{dist.total}} 个有报价品种</text><text>下跌 {{dist.down}} 种</text></view>
+      </view>
+
+      <!-- 榜单 -->
+      <view class="card">
+        <view class="ch">
+          <view class="tabs">
+            <text class="tab-i {{rankMode === 'up' ? 'on' : ''}}" data-mode="up" bindtap="onSelectRank">涨幅榜</text>
+            <text class="tab-i {{rankMode === 'down' ? 'on' : ''}}" data-mode="down" bindtap="onSelectRank">跌幅榜</text>
+            <text class="tab-i {{rankMode === 'all' ? 'on' : ''}}" data-mode="all" bindtap="onSelectRank">全部</text>
+          </view>
+          <text class="ch-s">{{rankUnitNote}}</text>
+        </view>
+        <scroll-view class="chips" scroll-x="true" wx:if="{{activeCategory === 'veg' && rankMode === 'all'}}">
+          <text class="chip {{vegChip === item ? 'on' : ''}}" wx:for="{{vegChips}}" wx:key="*this" data-chip="{{item}}" bindtap="onSelectChip">{{item}}</text>
+        </scroll-view>
+        <block wx:for="{{rankRows}}" wx:key="key"><template is="qrow" data="{{...item}}" /></block>
+        <view class="empty" wx:if="{{!rankRows.length}}">{{rankEmptyText}}</view>
+      </view>
+    </block>
+
+    <view class="foot">
+      <view>价格来源：省农业农村厅（斗南花卉市场价 / 王旗营批发价）· 天气：和风天气</view>
+      <view>批发/市场参考价，非地头收购价 · 仅供参考，不构成买卖建议<text wx:if="{{isOffline}}"> · 当前为离线缓存</text></view>
+    </view>
+  </block>
+</view>

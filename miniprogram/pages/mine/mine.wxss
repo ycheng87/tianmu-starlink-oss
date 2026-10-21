@@ -1,0 +1,197 @@
+/* 个人资料卡片 */
+.profile-card {
+  padding: 0;
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  padding: 32rpx 24rpx;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background: #E8ECEB;
+  flex-shrink: 0;
+}
+
+.avatar-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-empty-icon {
+  font-size: 44rpx;
+  line-height: 1;
+  opacity: 0.5;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+  margin-left: 24rpx;
+}
+
+.profile-name {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.profile-name.placeholder {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--color-green);
+}
+
+.profile-meta {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  margin-top: 8rpx;
+}
+
+.profile-arrow {
+  font-size: 36rpx;
+  color: var(--text-tertiary);
+  padding: 8rpx 12rpx;
+  flex-shrink: 0;
+}
+
+/* 统计栏 */
+.stats-row {
+  display: flex;
+  align-items: center;
+  border-top: 1rpx solid var(--border-light);
+  padding: 24rpx 0;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-green);
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-top: 4rpx;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 48rpx;
+  background: var(--border-light);
+  flex-shrink: 0;
+}
+
+/* 菜单卡片 */
+.menu-card,
+.action-card,
+.setting-card {
+  padding: 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background: var(--bg-hover);
+  transition: background 0.15s ease;
+}
+
+.menu-icon {
+  font-size: 40rpx;
+  width: 64rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.menu-body {
+  flex: 1;
+  min-width: 0;
+  margin-left: 8rpx;
+}
+
+.menu-title {
+  font-size: 30rpx;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.menu-title.logout-text {
+  color: var(--color-red);
+}
+
+.menu-desc {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  margin-top: 4rpx;
+}
+
+.menu-arrow {
+  font-size: 36rpx;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  padding-left: 8rpx;
+}
+
+/* [优化] P1-12: API Key 输入框样式 */
+.api-key-input-wrap {
+  display: flex;
+  align-items: center;
+  padding: 0 24rpx 24rpx 24rpx;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.api-key-input {
+  flex: 1;
+  height: 72rpx;
+  border: 1rpx solid var(--border-light);
+  border-radius: 8rpx;
+  padding: 0 16rpx;
+  font-size: 26rpx;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.api-key-save-btn {
+  width: 120rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  background: var(--color-green);
+  color: #fff;
+  font-size: 26rpx;
+  border-radius: 8rpx;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.api-key-save-btn::after {
+  border: none;
+}
+
+/* 底部版本信息 */
+.footer-version {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  padding: 32rpx 0;
+}

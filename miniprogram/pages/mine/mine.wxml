@@ -1,0 +1,109 @@
+<view class="container {{themeClass}}">
+  <!-- 骨架屏加载状态 -->
+  <view class="skeleton" wx:if="{{loading}}">
+    <view class="skeleton-card">
+      <view class="skeleton-avatar"></view>
+      <view class="skeleton-line medium"></view>
+      <view class="skeleton-line short"></view>
+    </view>
+    <view class="skeleton-card">
+      <view class="skeleton-line long"></view>
+      <view class="skeleton-line long"></view>
+      <view class="skeleton-line medium"></view>
+    </view>
+    <view class="skeleton-card">
+      <view class="skeleton-line long"></view>
+      <view class="skeleton-line long"></view>
+      <view class="skeleton-line medium"></view>
+    </view>
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <!-- 用户信息卡片 -->
+    <view class="card profile-card">
+      <view class="profile-top">
+        <image
+          class="avatar"
+          wx:if="{{userInfo.avatarUrl}}"
+          src="{{userInfo.avatarUrl}}"
+          mode="aspectFill"
+        />
+        <view class="avatar avatar-empty" wx:else>
+          <text class="avatar-empty-icon">👤</text>
+        </view>
+        <view class="profile-info">
+          <view class="profile-name" wx:if="{{userInfo.nickName}}">{{userInfo.nickName}}</view>
+          <view class="profile-name placeholder" wx:elif="{{isLoggedIn}}">已登录</view>
+          <view class="profile-name placeholder" wx:else bindtap="onTapLogin">点击登录体验更多</view>
+          <view class="profile-meta" wx:if="{{userInfo.province || userInfo.city}}">
+            {{userInfo.province}} {{userInfo.city}}
+          </view>
+        </view>
+      </view>
+      <!-- 统计栏 -->
+      <view class="stats-row">
+        <view class="stat-item">
+          <view class="stat-num">{{watchCount}}</view>
+          <view class="stat-label">关注品种</view>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <view class="stat-num">{{isLoggedIn ? '已' : '未'}}</view>
+          <view class="stat-label">登录状态</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 功能菜单 -->
+    <view class="card menu-card">
+      <view class="menu-item"
+        wx:for="{{menuList}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        data-path="{{item.path}}"
+        bindtap="onTapMenu"
+      >
+        <text class="menu-icon">{{item.icon}}</text>
+        <view class="menu-body">
+          <view class="menu-title">{{item.title}}</view>
+          <view class="menu-desc">{{item.desc}}</view>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- [优化] P1-9: 涨跌颜色模式切换 -->
+    <view class="card setting-card">
+      <view class="menu-item" bindtap="onToggleColorMode">
+        <text class="menu-icon">🎨</text>
+        <view class="menu-body">
+          <view class="menu-title">涨跌颜色模式</view>
+          <view class="menu-desc">{{colorModeText}}</view>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 底部操作 -->
+    <view class="card action-card">
+      <view class="menu-item" wx:if="{{isLoggedIn}}" bindtap="onTapLogout">
+        <text class="menu-icon">🚪</text>
+        <view class="menu-body">
+          <view class="menu-title logout-text">退出登录</view>
+          <view class="menu-desc">退出后关注列表仅保存在本地</view>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" wx:else bindtap="onTapLogin">
+        <text class="menu-icon">🔑</text>
+        <view class="menu-body">
+          <view class="menu-title">立即登录</view>
+          <view class="menu-desc">登录后可云端同步关注列表</view>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+
+    <view class="footer-version">田亩星链 v2.0.0</view>
+  </block>
+</view>

@@ -59,11 +59,21 @@ This is the data pipeline, not the product. Deliberately excluded:
 - The production database and collected price history
 - The production server's own service code
 
+## Mini-program front end (`miniprogram/`)
+
+The WeChat mini-program source (native WXML/WXSS/JS) lives in `miniprogram/`. v2.0 redesign:
+
+- **Home**: one "headline" card answers *what moved most today* (taken straight from the API's `change_pct`), a rise/fall distribution bar, and ranked lists where each row shows the day's low–high range with the average marked on it.
+- **Detail**: a *cross-period compare* strip — latest / 1 week ago / 1 month ago / 3 months ago, each cell labelled with the actual trading date it came from (markets close on some days; no interpolation) — plus a per-commodity price curve (7 / 30 / 90 / 365 days).
+- Search across all ~100 commodities; flower and vegetable data dates are shown separately because the two sources publish on different days; units (per stem / per bunch / per kg) are never mixed in one ranking.
+
+The API key and AppID are blanked in this public copy.
+
 ## Status
 
-- **Live since August 2026**, running daily on a single VPS
-- **95 commits** over ~2.5 months of active maintenance
-- Used by a small group of trial growers in Yunnan
+- **Live since August 2026**, running daily on a single VPS; the mini-program has been in production on WeChat since October 2026
+- Maintained over ~2.5 months (this public repo is a clean export without the private history)
+- Small real user base: as of 2026-10-22, real WeChat users with saved watchlists, and a handful of distinct daily visitors
 
 ## Running it locally
 

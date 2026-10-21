@@ -1,0 +1,111 @@
+<view class="container {{themeClass}} watch-page">
+  <view class="page-brand-strip">
+    <image class="page-brand-logo" wx:if="{{themeClass !== 'theme-dark'}}" src="/images/tianmu-logo.png" mode="aspectFit" />
+    <image class="page-brand-logo" wx:else src="/images/tianmu-logo-reverse.png" mode="aspectFit" />
+    <view class="page-brand-caption">常看品种 · 集中追踪</view>
+  </view>
+  <view class="watch-intro">
+    <view class="watch-intro-title">我的关注</view>
+    <view class="watch-intro-subtitle">把常看的鲜花和菜品价格放在一起</view>
+  </view>
+
+  <view class="watch-info">
+    <view class="watch-info-icon">田</view>
+    <view class="watch-info-copy">
+      <view class="watch-info-title">你的行情观察夹</view>
+      <view class="watch-info-text">关注品种集中展示，价格、日期和来源以行情数据为准。</view>
+    </view>
+  </view>
+
+  <view class="skeleton" wx:if="{{loading}}">
+    <view class="page-loading-state"><image class="page-loading-gif" src="/images/loading-field.gif" mode="aspectFit" /><view>正在加载关注清单</view></view>
+    <view class="skeleton-card">
+      <view class="skeleton-line medium"></view>
+      <view class="skeleton-line long"></view>
+      <view class="skeleton-line long"></view>
+      <view class="skeleton-line medium"></view>
+    </view>
+  </view>
+
+  <view class="error-box" wx:if="{{error}}">
+    <view class="err-text">{{error}}</view>
+    <view class="btn-retry" bindtap="onRetry">重新加载</view>
+  </view>
+
+  <block wx:if="{{!loading && !error}}">
+    <block wx:if="{{list.length}}">
+      <view class="watch-list-card">
+        <view class="watch-list-heading">
+          <view>
+            <view class="watch-list-title">关注清单</view>
+            <view class="watch-list-caption">{{list.length}} 个常看品种</view>
+          </view>
+          <view class="watch-manage {{editing ? 'active' : ''}}" bindtap="onToggleEdit">{{editing ? '完成' : '管理'}}</view>
+        </view>
+
+        <view class="watch-filter-tabs">
+          <view class="watch-filter {{activeFilter === item.key ? 'selected' : ''}}" wx:for="{{filterOptions}}" wx:key="key" data-filter="{{item.key}}" bindtap="onSelectFilter">{{item.label}}</view>
+        </view>
+
+        <view class="watch-row" wx:for="{{displayList}}" wx:key="key">
+          <view class="watch-kind-mark {{item.type === 'flower' ? 'flower' : 'veg'}}">{{item.type === 'flower' ? '花' : '菜'}}</view>
+          <view class="watch-row-main">
+            <view class="watch-row-name">{{item.name}}</view>
+            <view class="watch-row-meta">
+              <text wx:if="{{item.type === 'veg' && item.market}}">{{item.market}}</text>
+              <text wx:if="{{item.type === 'veg' && item.market && item.source}}"> · </text>
+              <text wx:if="{{item.source}}">{{item.source}}</text>
+              <text wx:if="{{item.source && item.date}}"> · </text>
+              <text wx:if="{{item.date}}">{{item.date}}</text>
+            </view>
+          </view>
+          <view class="watch-row-price-area">
+            <view class="watch-row-price no-quote" wx:if="{{item.noQuote}}">暂无报价</view>
+            <view class="watch-row-price" wx:else>{{item.priceText}}<text class="watch-row-unit" wx:if="{{item.unit}}"> {{item.unit}}</text></view>
+            <view class="watch-row-change {{item.pctClass}}" wx:if="{{item.pct !== null && item.pct !== undefined && item.pct !== ''}}">{{item.pctText}}<text>较昨日</text></view>
+          </view>
+          <view class="watch-remove" wx:if="{{editing}}" data-key="{{item.key}}" catchtap="onRemove">移除</view>
+        </view>
+
+        <view class="watch-filter-empty" wx:if="{{displayList.length === 0}}">这个分类还没有关注品种，试试切换上方分类。</view>
+      </view>
+      <view class="watch-disclaimer">市场参考价不等于地头收购价。</view>
+    </block>
+
+    <block wx:else>
+      <view class="watch-empty-card">
+        <view class="watch-illustration" aria-hidden="true">
+          <view class="watch-orbit"></view>
+          <view class="watch-star">★</view>
+          <view class="watch-dot dot-one"></view>
+          <view class="watch-dot dot-two"></view>
+          <view class="watch-hill hill-one"></view>
+          <view class="watch-hill hill-two"></view>
+          <view class="watch-hill hill-three"></view>
+          <view class="watch-field-mark">△</view>
+        </view>
+        <view class="watch-empty-title">还没有关注品种</view>
+        <view class="watch-empty-desc">在行情页找到常看的品种，点一下 ☆。之后回到这里，就能集中查看市场参考价和较昨日变化。</view>
+        <view class="watch-empty-button" bindtap="onGoIndex">去行情添加</view>
+        <view class="watch-empty-footnote">鲜花与菜品都可以加入关注</view>
+      </view>
+
+      <view class="watch-steps-card">
+        <view class="watch-steps-title">三步建立你的关注清单</view>
+        <view class="watch-steps">
+          <view class="watch-step"><view class="watch-step-number">1</view><view class="watch-step-label">打开行情</view></view>
+          <view class="watch-step-arrow">›</view>
+          <view class="watch-step"><view class="watch-step-number">2</view><view class="watch-step-label">找到品种</view></view>
+          <view class="watch-step-arrow">›</view>
+          <view class="watch-step"><view class="watch-step-number">3</view><view class="watch-step-label">点 ☆ 关注</view></view>
+        </view>
+      </view>
+
+      <view class="watch-empty-legend">
+        <view><text>¥</text> 当前参考价</view>
+        <view><text>↕</text> 较昨日变化</view>
+        <view><text>⌂</text> 市场来源</view>
+      </view>
+    </block>
+  </block>
+</view>
