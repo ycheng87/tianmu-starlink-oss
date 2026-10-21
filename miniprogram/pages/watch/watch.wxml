@@ -69,7 +69,7 @@
 
         <view class="watch-filter-empty" wx:if="{{displayList.length === 0}}">这个分类还没有关注品种，试试切换上方分类。</view>
       </view>
-      <view class="watch-disclaimer">市场参考价不等于地头收购价。</view>
+      <view class="watch-disclaimer">价格来源：省农业农村厅（斗南花卉市场价 / 王旗营批发价）· 批发/市场参考价，非地头收购价 · 仅供参考，不构成买卖建议</view>
     </block>
 
     <block wx:else>

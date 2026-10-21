@@ -89,3 +89,5 @@
   padding: 16rpx 56rpx;
   border-radius: 36rpx;
 }
+
+.msgs-disclaimer { margin: 32rpx 0 8rpx; text-align: center; font-size: 21rpx; color: #8A978F; line-height: 1.6; }

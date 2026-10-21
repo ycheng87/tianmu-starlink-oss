@@ -297,9 +297,15 @@ Page({
       rankEmptyText = '暂无报价';
     }
 
+    // 单位注脚从实际上榜行动态生成（不把"蔬菜都是元/公斤"的假设写死进 UI）
     let rankUnitNote = '';
-    if (mode === 'all') rankUnitNote = '单位见各行';
-    else rankUnitNote = cat === 'flower' ? '元/枝 · 条=当日最低–最高' : '元/公斤';
+    if (mode === 'all') {
+      rankUnitNote = '单位见各行';
+    } else {
+      const units = Array.from(new Set(rows.map((r) => r.unit).filter(Boolean)));
+      rankUnitNote = units.length === 1 ? units[0] : '单位见各行';
+      if (cat === 'flower' && units.length === 1) rankUnitNote += ' · 条=当日最低–最高';
+    }
 
     this.setData({
       hero: hero,
